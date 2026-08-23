@@ -19,6 +19,7 @@ public final class NodeConfig {
   private String defaultNode = "默认";
   private String alertPermission = "connectinfo.alert.domain";
   private boolean includeUnknown = true;
+
   public NodeConfig(Path path) {
 
     this.path = path;

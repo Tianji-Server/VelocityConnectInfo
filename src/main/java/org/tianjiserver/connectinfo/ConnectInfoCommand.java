@@ -6,8 +6,9 @@ import com.velocitypowered.api.proxy.Player;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Comparator;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -181,13 +182,72 @@ public final class ConnectInfoCommand implements SimpleCommand {
   @Override
   public List<String> suggest(Invocation invocation) {
 
+    CommandSource source = invocation.source();
     String[] args = invocation.arguments();
-    if(args.length > 1) return List.of();
-    String input = args.length == 0? "" : args[0].toLowerCase();
-    return java.util.stream.Stream.concat(
-                    java.util.stream.Stream.of("nodes", "reload"),
-                    plugin.server().getAllPlayers().stream().map(Player::getUsername))
-            .filter(value->value.toLowerCase().startsWith(input))
-            .distinct().sorted(Comparator.comparing(String::toLowerCase)).toList();
+
+    /*
+     * /connectinfo <TAB>
+     */
+    if(args.length == 0) {
+      return getFirstArguments(source, "");
+    }
+
+    /*
+     * /connectinfo xxx<TAB>
+     */
+    if(args.length == 1) {
+      return getFirstArguments(source, args[0]);
+    }
+
+    /*
+     * 不存在第二层参数补全。
+     */
+    return List.of();
+  }
+
+  private List<String> getFirstArguments(
+          CommandSource source,
+          String input
+                                        ) {
+
+    String lowerInput = input.toLowerCase(Locale.ROOT);
+
+    List<String> suggestions = new ArrayList<>();
+
+    /*
+     * 子命令补全。
+     */
+    if(source.hasPermission("connectinfo.nodes")) {
+      suggestions.add("nodes");
+    }
+
+    if(source.hasPermission("connectinfo.reload")) {
+      suggestions.add("reload");
+    }
+
+    /*
+     * 只有拥有查看其他玩家权限时，
+     * 才允许补全在线玩家名称。
+     */
+    if(source.hasPermission("connectinfo.other")) {
+      for(Player player : plugin.server().getAllPlayers()) {
+        String username = player.getUsername();
+
+        if(username.toLowerCase(Locale.ROOT)
+                .startsWith(lowerInput)) {
+          suggestions.add(username);
+        }
+      }
+    }
+
+    /*
+     * 过滤子命令。
+     */
+    return suggestions.stream()
+            .filter(value->value
+                    .toLowerCase(Locale.ROOT)
+                    .startsWith(lowerInput))
+            .sorted(String.CASE_INSENSITIVE_ORDER)
+            .toList();
   }
 }

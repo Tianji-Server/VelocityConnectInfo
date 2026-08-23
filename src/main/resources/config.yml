@@ -1,0 +1,43 @@
+# VelocityConnectInfo configuration
+# 域名匹配不区分大小写；端口不会参与节点匹配。
+
+messages:
+  prefix: "<dark_aqua>[ConnectInfo]</dark_aqua> "
+  no-permission: "<red>你没有权限使用这个指令。</red>"
+  player-not-found: "<red>玩家 <yellow><player></yellow> 不在线。</red>"
+  reload-success: "<green>配置文件已重新加载。</green>"
+  usage-console: "<red>控制台请使用：</red><yellow>/connectinfo <玩家></yellow>"
+  unknown-node: "默认"
+  restricted-domain: "<red>你使用的服务器地址目前不可用。</red>"
+
+# 未匹配任何节点时使用的介绍。
+default-node: "默认"
+
+# 域名 -> 节点介绍
+nodes:
+  "play.example.com": "默认"
+  "main.example.com": "主线路"
+  "backup.example.com": "备用线路"
+
+# 特定域名限制。
+# action: ALLOW / WARN / KICK
+# WARN: 允许登录，但向拥有 alert 权限的管理员发送提醒。
+# KICK: 拒绝玩家继续连接。
+# 未配置的域名默认 ALLOW。
+domain-rules:
+  "old.example.com":
+    action: "WARN"
+    description: "旧线路"
+    message: "<yellow>你正在使用旧线路，建议更换为新的服务器地址。</yellow>"
+
+  "disabled.example.com":
+    action: "KICK"
+    description: "已停用线路"
+    message: "<red>该服务器地址已经停止使用。</red>"
+
+alerts:
+  permission: "connectinfo.alert.domain"
+
+# 节点统计显示设置
+statistics:
+  include-unknown: true

@@ -1,0 +1,10 @@
+{
+  "id": "connectinfo",
+  "name": "VelocityConnectInfo",
+  "version": "${project.version}",
+  "description": "Compatibility module for Velocity",
+  "authors": [
+    "TianjiServer Community"
+  ],
+  "main": "org.tianjiserver.connectinfo.ConnectInfoPlugin"
+}

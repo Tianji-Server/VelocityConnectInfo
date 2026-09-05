@@ -22,6 +22,7 @@ import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 public final class ConnectInfoPlugin {
 
@@ -91,14 +92,11 @@ public final class ConnectInfoPlugin {
     playerInfo.put(player.getUniqueId(), new PlayerConnectionInfo(host, port, Instant.now()));
 
     if(rule != null && rule.action() == NodeConfig.DomainAction.WARN) {
-      String text = "<yellow><bold>线路提醒</bold></yellow>\n"
-                    + "<gray>玩家 <dark_gray>» <white>" + escape(player.getUsername()) + "\n"
-                    + "<gray>连接域名 <dark_gray>» <aqua>" + escape(host) + "\n"
-                    + "<gray>线路 <dark_gray>» <yellow>" + escape(rule.description());
-      Component warning = parse(text);
-      server.getAllPlayers().stream()
-              .filter(target->target.hasPermission(config.getAlertPermission()))
-              .forEach(target->target.sendMessage(warning));
+          Component warning = parse(rule.message());
+          server.getScheduler().buildTask(this, () ->
+            server.getPlayer(player.getUniqueId()).ifPresent(target->target.sendMessage(warning)))
+                  .delay(3000, TimeUnit.MILLISECONDS)
+            .schedule();
       logger.warn("Player {} connected through warned domain {}", player.getUsername(), host);
     }
   }
